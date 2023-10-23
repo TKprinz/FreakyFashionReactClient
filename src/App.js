@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import ProductForm from "./components/Forms/ProductForm";
 import SearchBar from "./components/Search/SearchBar";
+import Login from "./components/Login/Login";
+import { BrowserRouter, Route, Routes, Link } from "react-router-dom"; // Lägg till Routes här
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [message, setMessage] = useState("");
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
@@ -11,9 +14,10 @@ function App() {
     password: "Password1337",
   };
 
+  const [showLoggedInMessage, setShowLoggedInMessage] = useState(false);
+
   useEffect(() => {
     fetch("https://localhost:8000/auth", {
-      // Använd en relativ URL
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -22,9 +26,7 @@ function App() {
     })
       .then((resp) => resp.json())
       .then((newToken) => {
-        // Uppdatera användarna med det nya objektet från API:et
         setToken(newToken.token);
-        // console.log(newToken);
         console.log(newToken);
       })
       .catch((error) => {
@@ -32,11 +34,19 @@ function App() {
       });
   }, []);
 
+  const handleLogin = (username) => {
+    setIsLoggedIn(true);
+    setShowLoggedInMessage(true);
+    console.log(`Inloggad som ${username}`);
+
+    setTimeout(() => {
+      setShowLoggedInMessage(false);
+    }, 2000);
+  };
+
   const handleOnAdd = (product) => {
     console.log(token);
-    // Skicka informationen till web API:et med HTTP POST
     fetch("https://localhost:8000/products", {
-      // Använd en relativ URL
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,17 +57,13 @@ function App() {
       .then((response) => {
         if (response.status === 201) {
           setMessage("Produkten har sparats.");
-          // Clear the form or perform any other necessary actions
-
-          // Fetch the newly added product and update the products state
           return response.json();
         } else {
           setMessage("Det uppstod ett fel när produkten sparades.");
-          throw new Error("Sparningsfel");
+          throw Error("Sparningsfel");
         }
       })
       .then((newProduct) => {
-        // Uppdatera produkterna med det nya objektet från API:et
         setProducts([...products, newProduct]);
       })
       .catch((error) => {
@@ -67,9 +73,7 @@ function App() {
   };
 
   const handleSearch = (searchQuery) => {
-    // Gör en fetch-anrop till ditt web-API med den aktuella söktermen
     fetch(`https://localhost:8000/products/${searchQuery}`, {
-      // Använd en relativ URL
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -78,8 +82,7 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data); // Logga resultatet från API:et
-        // Uppdatera produkter med sökresultaten från API:et
+        console.log(data);
         setProducts(data);
       })
       .catch((error) => {
@@ -103,19 +106,61 @@ function App() {
       },
     });
   };
+
   return (
     <div className="App">
       <p className="text-center py-4 text-xl font-semibold">
         Product Manager - Freaky Fashion
       </p>
-      <header className="App-header">
-        <ProductForm onAdd={handleOnAdd} />
-        <SearchBar
-          onSearch={handleSearch}
-          result={products}
-          onDelete={handleDelete}
-        />
-      </header>
+      <BrowserRouter>
+        <header className="App-header">
+          <div className="bg-black">
+            <nav className="bg-black-600 p-4">
+              <ul className="flex justify-center space-x-4">
+                <li>
+                  <Link
+                    to="/login"
+                    className="text-white hover:text-orange-500"
+                  >
+                    Logga in
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/produktskapande"
+                    className="text-white hover:text-orange-500"
+                  >
+                    Skapa produkt
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/sok" className="text-white hover:text-orange-500">
+                    Sök
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <Routes>
+            {" "}
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route
+              path="/produktskapande"
+              element={<ProductForm onAdd={handleOnAdd} />}
+            />
+            <Route
+              path="/sok"
+              element={
+                <SearchBar
+                  onSearch={handleSearch}
+                  result={products}
+                  onDelete={handleDelete}
+                />
+              }
+            />
+          </Routes>
+        </header>
+      </BrowserRouter>
     </div>
   );
 }
