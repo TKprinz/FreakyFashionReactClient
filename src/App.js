@@ -3,6 +3,7 @@ import ProductForm from "./components/Forms/ProductForm";
 import SearchBar from "./components/Search/SearchBar";
 
 function App() {
+  const [message, setMessage] = useState("");
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
   const user = {
@@ -43,13 +44,25 @@ function App() {
       },
       body: JSON.stringify(product),
     })
-      .then((resp) => resp.json())
+      .then((response) => {
+        if (response.status === 201) {
+          setMessage("Produkten har sparats.");
+          // Clear the form or perform any other necessary actions
+
+          // Fetch the newly added product and update the products state
+          return response.json();
+        } else {
+          setMessage("Det uppstod ett fel när produkten sparades.");
+          throw new Error("Sparningsfel");
+        }
+      })
       .then((newProduct) => {
         // Uppdatera produkterna med det nya objektet från API:et
         setProducts([...products, newProduct]);
       })
       .catch((error) => {
-        console.error("Fel vid tillägg av produkt:", error);
+        setMessage("Det uppstod ett fel när produkten sparades.");
+        console.error(error);
       });
   };
 
@@ -86,9 +99,9 @@ function App() {
     fetch(`https://localhost:8000/products/${productId}`, {
       method: "delete",
       headers: {
-        "Authorization": `Bearer ${token}`,
-      }
-    })
+        Authorization: `Bearer ${token}`,
+      },
+    });
   };
   return (
     <div className="App">

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 const SearchBar = ({ onSearch, result, onDelete }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isProductDeleted, setIsProductDeleted] = useState(false);
 
   const handleInputChange = (e) => {
     setSearchQuery(e.target.value);
@@ -17,6 +18,12 @@ const SearchBar = ({ onSearch, result, onDelete }) => {
   const handleDelete = (e) => {
     e.preventDefault();
     onDelete(result.id);
+
+    // Visa meddelandet "Produkten har tagits bort" och ställ in en timeout för att ta bort det efter 5 sekunder
+    setIsProductDeleted(true);
+    setTimeout(() => {
+      setIsProductDeleted(false);
+    }, 5000);
   };
 
   return (
@@ -50,24 +57,30 @@ const SearchBar = ({ onSearch, result, onDelete }) => {
           </button>
         </div>
       </form>
-      <div className="bg-gray-900 text-white p-4 rounded-lg shadow-lg max-w-xl mx-auto">
+      <div className="p-4 max-w-xl mx-auto">
         {result ? (
-          <div>
-            <p className="text-3xl font-bold text-white">
-              {result.productName}
-            </p>
-            <button
-              onClick={handleDelete}
-              className="px-4 py-2 mt-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:ring focus:ring-gray-300"
-            >
-              Radera
-            </button>
+          <div className="bg-white p-8 rounded-lg shadow-lg w-full flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold mb-6">
+                {result.productName} {result.stockKeepingUnit}
+              </h2>
+            </div>
+            <div>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-black text-white rounded-lg hover:bg-red-500 hover:text-black focus:ring focus:ring-gray-300"
+              >
+                Radera
+              </button>
+            </div>
           </div>
-        ) : (
-          <p className="text-2xl font-semibold text-red-500">
-            Detta kommer att visas om result är false.
-          </p>
-        )}
+        ) : isProductDeleted ? (
+          <div className="bg-white p-8 rounded-lg shadow-lg w-full">
+            <p className="text-2xl font-semibold text-green-500">
+              Produkten har tagits bort.
+            </p>
+          </div>
+        ) : null}
       </div>
     </div>
   );

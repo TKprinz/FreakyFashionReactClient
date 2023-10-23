@@ -10,6 +10,7 @@ const ProductForm = ({ onAdd }) => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  const [isProductSaved, setIsProductSaved] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,13 +20,23 @@ const ProductForm = ({ onAdd }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Här kan du använda formData-objektet som innehåller all formulärdata
     console.log(formData);
-    onAdd(formData);
-    // Återställ formuläret till det initiala tillståndet efter inskickning
-    setFormData(initialFormData);
+
+    try {
+      // Simulera ett asynkront Web API-anrop (ersätt detta med ditt eget API-anrop)
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulera en 1 sekunds fördröjning
+
+      onAdd(formData);
+      setIsProductSaved(true);
+      setTimeout(() => {
+        setIsProductSaved(false);
+      }, 5000);
+      setFormData(initialFormData);
+    } catch (error) {
+      console.error("Fel vid sparande av produkt:", error);
+    }
   };
 
   return (
@@ -35,6 +46,7 @@ const ProductForm = ({ onAdd }) => {
         className="bg-white p-8 rounded-lg shadow-lg"
       >
         <h2 className="text-2xl font-semibold mb-6">Lägg till produkt</h2>
+
         <div className="mb-4">
           <label
             htmlFor="productName"
@@ -119,14 +131,21 @@ const ProductForm = ({ onAdd }) => {
             required
           />
         </div>
+
         <div className="flex justify-end">
           <button
             type="submit"
-            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 focus:ring focus:ring-gray-300"
+            className="px-4 py-2 bg-black text-white rounded-lg hover-bg-gray-800 focus:ring focus-ring-gray-300"
           >
             Lägg till
           </button>
         </div>
+
+        {isProductSaved && (
+          <div className="text-green-500 mt-2 text-sm">
+            Produkten är sparad.
+          </div>
+        )}
       </form>
     </div>
   );
