@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ProductForm from "./components/Forms/ProductForm";
 import SearchBar from "./components/Search/SearchBar";
 import Login from "./components/Login/Login";
-import { BrowserRouter, Route, Routes, Link } from "react-router-dom"; // Lägg till Routes här
+import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -13,7 +13,6 @@ function App() {
     username: "TK@hotmail.com",
     password: "Password1337",
   };
-
   const [showLoggedInMessage, setShowLoggedInMessage] = useState(false);
 
   useEffect(() => {
@@ -107,6 +106,10 @@ function App() {
     });
   };
 
+  const handleLogOut = () => {
+    setIsLoggedIn(false);
+  };
+
   return (
     <div className="App">
       <p className="text-center py-4 text-xl font-semibold">
@@ -117,33 +120,40 @@ function App() {
           <div className="bg-black">
             <nav className="bg-black-600 p-4">
               <ul className="flex justify-center space-x-4">
-                <li>
-                  <Link
-                    to="/login"
-                    className="text-white hover:text-orange-500"
-                  >
-                    Logga in
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/produktskapande"
-                    className="text-white hover:text-orange-500"
-                  >
-                    Skapa produkt
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/sok" className="text-white hover:text-orange-500">
-                    Sök
-                  </Link>
-                </li>
+                {isLoggedIn && (
+                  <>
+                    <li>
+                      <Link
+                        to="/produktskapande"
+                        className="text-white hover:text-orange-500"
+                      >
+                        Skapa produkt
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/sok"
+                        className="text-white hover:text-orange-500"
+                      >
+                        Sök
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/"
+                        className="text-white hover:text-orange-500"
+                        onClick={handleLogOut}
+                      >
+                        Logga ut
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </nav>
           </div>
           <Routes>
-            {" "}
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/" element={<Login onLogin={handleLogin} />} />
             <Route
               path="/produktskapande"
               element={<ProductForm onAdd={handleOnAdd} />}
@@ -161,6 +171,19 @@ function App() {
           </Routes>
         </header>
       </BrowserRouter>
+      {showLoggedInMessage && (
+        <div
+          className="bg-black p-4 text-white text-center"
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          Inloggning lyckades
+        </div>
+      )}
     </div>
   );
 }
