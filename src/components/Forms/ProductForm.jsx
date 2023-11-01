@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ProductForm = ({ onAdd }) => {
+const ProductForm = ({ onAdd, message }) => {
   const initialFormData = {
     productName: "",
     stockKeepingUnit: "",
@@ -27,7 +27,7 @@ const ProductForm = ({ onAdd }) => {
     try {
       // Simulera ett asynkront Web API-anrop (ersätt detta med ditt eget API-anrop)
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulera en 1 sekunds fördröjning
-
+      console.log(message);
       onAdd(formData);
       setIsProductSaved(true);
       setTimeout(() => {
@@ -141,11 +141,11 @@ const ProductForm = ({ onAdd }) => {
           </button>
         </div>
 
-        {isProductSaved && (
-          <div className="text-green-500 mt-2 text-sm">
-            Produkten är sparad.
-          </div>
-        )}
+        <div>
+          {message && (
+            <div className="text-black-500 mt-2 text-sm">{message}</div>
+          )}
+        </div>
       </form>
     </div>
   );

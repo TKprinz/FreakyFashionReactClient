@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import ProductForm from "./components/Forms/ProductForm";
 import SearchBar from "./components/Search/SearchBar";
 import Login from "./components/Login/Login";
-import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,7 +29,7 @@ function App() {
         console.log(newToken);
       })
       .catch((error) => {
-        console.error("Fel vid tillägg av användare:", error);
+        console.error("Fel vid inloggning:", error);
       });
   }, []);
 
@@ -54,18 +54,20 @@ function App() {
       body: JSON.stringify(product),
     })
       .then((response) => {
-        if (response.status === 201) {
-          setMessage("Produkten har sparats.");
+        if (response.ok) {
           return response.json();
         } else {
-          setMessage("Det uppstod ett fel när produkten sparades.");
-          throw Error("Sparningsfel");
+          // Om det inte är en lyckad respons (status är inte 2xx), kasta ett fel
+          throw new Error("Något gick fel vid sparandet av produkten.");
         }
       })
       .then((newProduct) => {
+        // Uppdatera produkterna med den nya produkten
         setProducts([...products, newProduct]);
+        setMessage("Produkten har sparats.");
       })
       .catch((error) => {
+        // Felhantering om något går fel i fetch eller vid parsning av respons
         setMessage("Det uppstod ett fel när produkten sparades.");
         console.error(error);
       });
@@ -90,8 +92,7 @@ function App() {
   };
 
   const handleDelete = (productId) => {
-    setProducts(null);
-
+    setProducts([]);
     const confirmed = window.confirm(
       "Är du säker på att du vill radera produkten?"
     );
@@ -99,7 +100,7 @@ function App() {
       return;
     }
     fetch(`https://localhost:8000/products/${productId}`, {
-      method: "delete",
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -156,7 +157,7 @@ function App() {
             <Route path="/" element={<Login onLogin={handleLogin} />} />
             <Route
               path="/produktskapande"
-              element={<ProductForm onAdd={handleOnAdd} />}
+              element={<ProductForm onAdd={handleOnAdd} message={message} />}
             />
             <Route
               path="/sok"
@@ -165,6 +166,7 @@ function App() {
                   onSearch={handleSearch}
                   result={products}
                   onDelete={handleDelete}
+                  setResults={setProducts}
                 />
               }
             />
