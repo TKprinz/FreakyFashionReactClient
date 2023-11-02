@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const SearchBar = ({ onSearch, result, onDelete }) => {
+const SearchBar = ({ onSearch, result, onDelete, setResults }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isProductDeleted, setIsProductDeleted] = useState(false);
+
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setResults(null);
+    }
+  }, [searchQuery, setResults]);
 
   const handleInputChange = (e) => {
     setSearchQuery(e.target.value);
@@ -10,9 +15,9 @@ const SearchBar = ({ onSearch, result, onDelete }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    onSearch(searchQuery);
-
-    console.log(result);
+    if (searchQuery.trim() !== "") {
+      onSearch(searchQuery);
+    }
   };
 
   const handleDelete = (e) => {
@@ -20,9 +25,9 @@ const SearchBar = ({ onSearch, result, onDelete }) => {
     onDelete(result.id);
 
     // Visa meddelandet "Produkten har tagits bort" och ställ in en timeout för att ta bort det efter 5 sekunder
-    setIsProductDeleted(true);
+    setResults(null); // Rensa resultaten när produkten tas bort
     setTimeout(() => {
-      setIsProductDeleted(false);
+      setResults(null); // Rensa raderingsmeddelandet
     }, 5000);
   };
 
@@ -74,13 +79,15 @@ const SearchBar = ({ onSearch, result, onDelete }) => {
               </button>
             </div>
           </div>
-        ) : isProductDeleted ? (
-          <div className="bg-white p-8 rounded-lg shadow-lg w-full">
-            <p className="text-2xl font-semibold text-green-500">
-              Produkten har tagits bort.
-            </p>
-          </div>
-        ) : null}
+        ) : (
+          result !== null && (
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full">
+              <p className="text-2xl font-semibold text-green-500">
+                Produkten har tagits bort.
+              </p>
+            </div>
+          )
+        )}
       </div>
     </div>
   );

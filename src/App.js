@@ -65,10 +65,20 @@ function App() {
         // Uppdatera produkterna med den nya produkten
         setProducts([...products, newProduct]);
         setMessage("Produkten har sparats.");
+
+        // Schedule the removal of the message after 2 seconds
+        setTimeout(() => {
+          setMessage(""); // Clear the message
+        }, 2000); // 2000 milliseconds (2 seconds)
       })
       .catch((error) => {
         // Felhantering om något går fel i fetch eller vid parsning av respons
         setMessage("Det uppstod ett fel när produkten sparades.");
+        // Schedule the removal of the message after 2 seconds
+        setTimeout(() => {
+          setMessage(""); // Clear the message
+        }, 2000); // 2000 milliseconds (2 seconds)
+
         console.error(error);
       });
   };
