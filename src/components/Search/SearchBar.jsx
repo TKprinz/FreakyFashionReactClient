@@ -24,10 +24,9 @@ const SearchBar = ({ onSearch, result, onDelete, setResults }) => {
     e.preventDefault();
     onDelete(result.id);
 
-    // Visa meddelandet "Produkten har tagits bort" och ställ in en timeout för att ta bort det efter 5 sekunder
-    setResults(null); // Rensa resultaten när produkten tas bort
+    setResults(null);
     setTimeout(() => {
-      setResults(null); // Rensa raderingsmeddelandet
+      setResults(null);
     }, 5000);
   };
 
@@ -56,34 +55,51 @@ const SearchBar = ({ onSearch, result, onDelete, setResults }) => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 focus:ring focus:ring-gray-300"
+            className="px-4 py-2 bg-black text-white rounded-lg hover-bg-gray-800 focus:ring focus:ring-gray-300"
           >
             Sök
           </button>
         </div>
       </form>
       <div className="p-4 max-w-xl mx-auto">
-        {result ? (
-          <div className="bg-white p-8 rounded-lg shadow-lg w-full flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">
-                {result.productName} {result.stockKeepingUnit}
-              </h2>
-            </div>
-            <div>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 bg-black text-white rounded-lg hover:bg-red-500 hover:text-black focus:ring focus:ring-gray-300"
-              >
-                Radera
-              </button>
-            </div>
+        {result && result.stockKeepingUnit ? (
+          <div className="bg-white p-8 rounded-lg shadow-lg w-full">
+            <table className="w-full table-auto">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2">Produkt</th>
+                  <th className="px-4 py-2">SKU</th>
+                  <th className="px-4 py-2">Beskrivning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border px-4 py-2">{result.productName}</td>
+                  <td className="border px-4 py-2">
+                    {result.stockKeepingUnit}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {result.description}
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    <div>
+                      <button
+                        onClick={handleDelete}
+                        className="px-4 py-2 bg-black text-white rounded-lg hover:bg-red-500 hover:text-black focus:ring focus:ring-gray-300"
+                      >
+                        Radera
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         ) : (
           result !== null && (
             <div className="bg-white p-8 rounded-lg shadow-lg w-full">
-              <p className="text-2xl font-semibold text-green-500">
-                Produkten har tagits bort.
+              <p className="text-2xl font-semibold text-red-500">
+                Produkten finns inte.
               </p>
             </div>
           )
