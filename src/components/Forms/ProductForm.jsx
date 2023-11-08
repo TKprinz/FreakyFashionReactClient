@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ProductForm = ({ onAdd, message }) => {
+const ProductForm = ({ onAdd, message, setMessage }) => {
   const initialFormData = {
     productName: "",
     stockKeepingUnit: "",
@@ -13,6 +13,7 @@ const ProductForm = ({ onAdd, message }) => {
   const [isProductSaved, setIsProductSaved] = useState(false);
 
   const handleInputChange = (e) => {
+    setMessage(null);
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,

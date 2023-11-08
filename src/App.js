@@ -6,7 +6,7 @@ import Login from "./components/Login/Login";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(null);
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
   const user = {
@@ -167,7 +167,7 @@ function App() {
             <Route path="/" element={<Login onLogin={handleLogin} />} />
             <Route
               path="/produktskapande"
-              element={<ProductForm onAdd={handleOnAdd} message={message} />}
+              element={<ProductForm onAdd={handleOnAdd} message={message} setMessage={setMessage} />}
             />
             <Route
               path="/sok"
